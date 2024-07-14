@@ -10,6 +10,8 @@ import CustomFormField from "../customFormField"
 import SubmitButton from "../SubmitButton"
 import { useState } from "react"
 import { userFormValidation } from "@/lib/validation"
+import { useRouter } from "next/navigation"
+import { createuser } from "@/lib/actions/patient.actions"
 
 export enum FormFieldType {
   INPUT = 'input',
@@ -24,6 +26,8 @@ export enum FormFieldType {
 
 
 const PatientForm = () => {
+
+  const router = useRouter()
   // 1. Define your form.
   const [isLoading, setisLoading] = useState(false)
   const form = useForm<z.infer<typeof userFormValidation>>({
@@ -36,11 +40,20 @@ const PatientForm = () => {
   })
 
   // 2. Define a submit handler.
-  function onSubmit(values: z.infer<typeof userFormValidation>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
-    console.log(values)
+  async function onSubmit({name, email, phone}: z.infer<typeof userFormValidation>) {
+    setisLoading(true);
+
+    try {
+      const userData = {name, email, phone};
+
+      const user = await createuser(userData); 
+
+      if(user) router.push(`/patients/${user.$id}/register`)
+    } catch (error) {
+      console.error(error);
+    }
   }
+
   return (
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 flex-1">
