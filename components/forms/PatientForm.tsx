@@ -25,8 +25,6 @@ export enum FormFieldType {
   SKELETON = 'skeleton',
 }
 
-
-
 const PatientForm = () => {
 
   const router = useRouter()
@@ -41,21 +39,43 @@ const PatientForm = () => {
     },
   })
 
-  // 2. Define a submit handler.
-  async function onSubmit({name, email, phone}: z.infer<typeof userFormValidation>) {
+  // // 2. Define a submit handler.
+  // async function onSubmit({name, email, phone}: z.infer<typeof userFormValidation>) {
+  //   setisLoading(true);
+
+  //   try {
+  //     const userData = {name, email, phone};
+
+  //     const user = await createuser(userData); 
+
+  //     if(user) router.push(`/patients/${user.$id}/register`)
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // }
+
+  const onSubmit = async (values: z.infer<typeof userFormValidation>) => {
     setisLoading(true);
 
     try {
-      const userData = {name, email, phone};
+      const user = {
+        name: values.name,
+        email: values.email,
+        phone: values.phone,
+      };
 
-      const user = await createuser(userData); 
+      const newUser = await createuser(user);
 
-      if(user) router.push(`/patients/${user.$id}/register`)
+      if (newUser) {
+        router.push(`/patients/${newUser.$id}/register`);
+      }
     } catch (error) {
-      console.error(error);
+      console.log(error);
     }
-  }
 
+    setisLoading(false);
+  };
+  
   return (
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 flex-1">
@@ -94,11 +114,10 @@ const PatientForm = () => {
             placeholder = "123-456-7890"
           />
 
-          <SubmitButton className="" isLoading={isLoading}>Get Started</SubmitButton>
+          <SubmitButton isLoading={isLoading}>Get Started</SubmitButton>
         </form>
       </Form>
   )
 }
 
-//export default PatientForm
-export default dynamic (() => Promise.resolve(PatientForm), {ssr: false})
+export default PatientForm
