@@ -12,6 +12,8 @@ import { useState } from "react"
 import { userFormValidation } from "@/lib/validation"
 import { useRouter } from "next/navigation"
 import { createuser } from "@/lib/actions/patient.actions"
+import dynamic from "next/dynamic";
+
 
 export enum FormFieldType {
   INPUT = 'input',
@@ -98,4 +100,5 @@ const PatientForm = () => {
   )
 }
 
-export default PatientForm
+//export default PatientForm
+export default dynamic (() => Promise.resolve(PatientForm), {ssr: false})
